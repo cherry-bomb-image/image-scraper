@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
-import puppeteer from "puppeteer";
+import axios, { AxiosResponse } from "axios";
 
-const scrape = function() {
+const scrape = async function() : Promise<Object[]> {
   const headers : object = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36"
   }
@@ -14,40 +14,39 @@ const scrape = function() {
     "ijn": 1
   }
 
-  const url : string = "http://google.com/search?q=model+photoshoot";
+  const url : string = "https://google.com/search";
 
-  const options : object = {
-    url,
+  const config : object = {
+    url: url,
     params,
-    headers
+    headers,
+    method: "get"
   }
 
-  
-}
+  const response : AxiosResponse = await axios(config);
+  const $ : cheerio.Root = cheerio.load(response.data);
 
-const handle_request = async function(error, response, html) {
-  if (error) {
-    throw new Error("Error getting html: " + error);
-  }
+  return get_images($);
 
-  const $ = cheerio.load(html);
-  const images = await get_images($);
-  console.log(images);
 }
 
 const get_images = function($ : cheerio.Root) : Object[] {
   const images_results : Object[] = [];
   
   $(".MSM1fd").each((i : number, el : cheerio.Element) => {
-    images_results.push({
-      image: $(el).find("img").attr("src") ? $(el).find("img").attr("src") : $(el).find("img").attr("data-src"),
-      title: $(el).find("h3").text(),
-      source: $(el).find("a.VFACy .fxgdke").text(),
-      link: $(el).find("a.VFACy").attr("href")
-    });
+    images_results.push(get_image($, el));
   });
 
   return images_results;
+}
+
+const get_image = function($ : cheerio.Root, el : cheerio.Element) : Object {
+  return {
+    image: $(el).find("img").attr("src") ? $(el).find("img").attr("src") : $(el).find("img").attr("data-src"),
+    title: $(el).find("h3").text(),
+    source: $(el).find("a.VFACy .fxgdke").text(),
+    link: $(el).find("a.VFACy").attr("href")
+  };
 }
 
 export { scrape }
