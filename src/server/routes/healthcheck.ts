@@ -1,4 +1,6 @@
-const healthcheck = function(req, res) {
+import express from "express";
+
+const healthcheck = function(req : express.Request, res : express.Response) : void {
   const response = get_response();
   res.json(response);
 };
