@@ -8,7 +8,7 @@ const initialize_server = async function() {
 
   app.use("/", router);
 
-  const images : Object[] = await scrape();
+  const images : Object[] = await scrape("model photoshoot");
   console.log(images);
 
   app.listen(port, () => {
