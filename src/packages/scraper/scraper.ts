@@ -18,7 +18,6 @@ const scrape = async function(search : string) : Promise<Image[]> {
     "tbm": "isch",
     "hl": "en",
     "gl": "us",
-    "ijn": 1
   }
 
   const url : string = "https://google.com/search";
