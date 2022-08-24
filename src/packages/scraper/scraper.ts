@@ -1,7 +1,14 @@
 import cheerio from "cheerio";
 import axios, { AxiosResponse } from "axios";
 
-const scrape = async function(search : string) : Promise<Object[]> {
+interface Image {
+  image: string,
+  title: string,
+  source: string,
+  link: string
+};
+
+const scrape = async function(search : string) : Promise<Image[]> {
   const headers : object = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36"
   }
@@ -30,8 +37,8 @@ const scrape = async function(search : string) : Promise<Object[]> {
 
 }
 
-const get_images = function($ : cheerio.Root) : Object[] {
-  const images_results : Object[] = [];
+const get_images = function($ : cheerio.Root) : Image[] {
+  const images_results : Image[] = [];
   
   $(".MSM1fd").each((i : number, el : cheerio.Element) => {
     images_results.push(get_image($, el));
@@ -40,7 +47,7 @@ const get_images = function($ : cheerio.Root) : Object[] {
   return images_results;
 }
 
-const get_image = function($ : cheerio.Root, el : cheerio.Element) : Object {
+const get_image = function($ : cheerio.Root, el : cheerio.Element) : Image {
   return {
     image: $(el).find("img").attr("src") ? $(el).find("img").attr("src") : $(el).find("img").attr("data-src"),
     title: $(el).find("h3").text(),
@@ -49,4 +56,4 @@ const get_image = function($ : cheerio.Root, el : cheerio.Element) : Object {
   };
 }
 
-export { scrape }
+export { scrape, Image }
